@@ -6,7 +6,7 @@ export const createUser = async (req, res) => {
   const { email, password, dni, nombreApellido, puesto, telefono, coche } = req.body;
 
   try {
-    // ✅ Verificar si email o DNI ya existen
+    // Verificar si email o DNI ya existen
     const [existing] = await db.query(
       'SELECT * FROM users WHERE email = ? OR dni = ?',
       [email, dni]
@@ -15,26 +15,35 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: 'El email o DNI ya están registrados' });
     }
 
-    // ✅ Encriptar contraseña
+    // Encriptar contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();
 
-    // ✅ Insertar en tabla users
+    // Insertar en tabla users
     await db.query(
       `INSERT INTO users (id, email, password, dni, role, coche_asignado)
        VALUES (?, ?, ?, ?, 'personal', ?)`,
       [id, email, hashedPassword, dni, coche]
     );
 
-    // ✅ Insertar en tabla empleados
+    // Insertar en tabla empleados
     await db.query(
       `INSERT INTO empleados (id, nombreApellido, email, dni, puesto, telefono, coche)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [id, nombreApellido, email, dni, puesto, telefono, coche]
     );
 
-    console.log(`✅ Usuario ${email} creado con éxito`);
-    res.status(201).json({ message: 'Usuario creado exitosamente' });
+    // Actualizar francos pendientes sin chofer para este coche, asignándolos al nuevo empleado
+    await db.query(
+      `UPDATE francos f
+       JOIN coches c ON f.coche_id = c.id
+       SET f.empleado_id = ?
+       WHERE c.numero_coche = ? AND f.empleado_id IS NULL`,
+      [id, coche]
+    );
+
+    console.log(`✅ Usuario ${email} creado con éxito y francos asignados si existían.`);
+    res.status(201).json({ message: 'Usuario creado exitosamente y francos actualizados.' });
   } catch (error) {
     console.error('❌ Error al crear usuario:', error);
     res.status(500).json({ message: 'Error al crear usuario' });

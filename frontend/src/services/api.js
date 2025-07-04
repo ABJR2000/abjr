@@ -43,3 +43,20 @@ export const getFrancos = async (token) => {
   if (!res.ok) throw new Error('Error al obtener francos');
   return res.json();
 };
+
+
+export const fetchUserProfile = async (token) => {
+    const res = await fetch(`${API_BASE}/personal/profile`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        console.error("Error al obtener perfil:", error.message);
+        throw new Error(error.message || "No se pudo obtener el perfil");
+    }
+
+    return res.json(); // Devuelve { dni, email, telefono, coche_asignado, vacaciones }
+};

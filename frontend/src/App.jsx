@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminUserForm from './components/AdminUserForm';
 import FrancoCalendar from './components/FrancoCalendar';
 import Login from './components/Login';
+import UserProfile from './components/UserProfile';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -36,7 +37,10 @@ export default function App() {
       {role === 'admin' ? (
         <AdminUserForm token={token} />
       ) : (
+        <>
+        <UserProfile />
         <FrancoCalendar token={token} />
+        </>
       )}
     </div>
   );
