@@ -22,9 +22,17 @@ export const createUser = async (token, userData) => {
     },
     body: JSON.stringify(userData),
   });
-  if (!res.ok) throw new Error('Error al crear usuario');
-  return res.json();
+
+  const data = await res.json();
+  console.log('Respuesta del backend:', data);
+
+  if (!res.ok) {
+    throw new Error(data.message || 'Error al crear usuario');
+  }
+
+  return data;
 };
+
 
 export const getFrancos = async (token) => {
   const res = await fetch(`${API_BASE}/francos`, {

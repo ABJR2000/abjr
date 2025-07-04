@@ -8,10 +8,12 @@ export default function AdminUserForm({ token }) {
     dni: '',
     puesto: '',
     telefono: '',
-    coche_asignado: '',
+    coche: '',
+    password: '', // 🟢 Agregamos contraseña
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +24,7 @@ export default function AdminUserForm({ token }) {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setError('');
     try {
       await createUser(token, formData);
       setMessage('✅ Usuario creado exitosamente');
@@ -31,11 +34,12 @@ export default function AdminUserForm({ token }) {
         dni: '',
         puesto: '',
         telefono: '',
-        coche_asignado: '',
+        coche: '',
+        password: '', // 🟢 Limpiamos también
       });
     } catch (err) {
       console.error(err);
-      setMessage(`❌ ${err.message || 'Error al crear usuario'}`);
+      setError(`❌ ${err.message || 'Error al crear usuario'}`);
     } finally {
       setLoading(false);
     }
@@ -60,6 +64,15 @@ export default function AdminUserForm({ token }) {
           placeholder="Correo Electrónico"
           className="w-full p-2 border rounded"
           value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password" // 🟢 Contraseña
+          name="password"
+          placeholder="Contraseña"
+          className="w-full p-2 border rounded"
+          value={formData.password}
           onChange={handleChange}
           required
         />
@@ -92,10 +105,10 @@ export default function AdminUserForm({ token }) {
         />
         <input
           type="text"
-          name="coche_asignado"
+          name="coche"
           placeholder="Número de Coche Asignado"
           className="w-full p-2 border rounded"
-          value={formData.coche_asignado}
+          value={formData.coche}
           onChange={handleChange}
           required
         />
@@ -107,7 +120,13 @@ export default function AdminUserForm({ token }) {
           {loading ? 'Creando...' : 'Crear Usuario'}
         </button>
       </form>
-      {message && <p className="mt-4 text-center text-sm">{message}</p>}
+
+      {message && (
+        <p className="mt-4 text-green-600 text-center text-sm">{message}</p>
+      )}
+      {error && (
+        <p className="mt-4 text-red-600 text-center text-sm">{error}</p>
+      )}
     </div>
   );
 }
