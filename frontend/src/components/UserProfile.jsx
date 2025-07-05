@@ -40,7 +40,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="max-w-lg mx-auto mt-8 p-6 bg-white rounded shadow">
+    <div className="container max-w-3xl mx-auto mt-8 p-6 bg-white rounded-lg shadow">
       <h2 className="text-2xl font-bold mb-4 text-center">👤 Mi Perfil</h2>
       <div className="space-y-2">
         <p><span className="font-semibold">DNI:</span> {userData.dni}</p>

@@ -1,19 +1,26 @@
-import { useEffect, useState } from 'react';
-import AdminUserForm from './components/AdminUserForm';
-import FrancoCalendar from './components/FrancoCalendar';
-import Login from './components/Login';
-import UserProfile from './components/UserProfile';
+// App.jsx
+import { useEffect, useState } from "react";
+import FrancosPublicados from "./components/FrancosPublicados";
+import FrancoCalendar from "./components/FrancoCalendar";
+import MisFrancos from "./components/MisFrancos";
+import UserProfile from "./components/UserProfile";
+import IntercambioList from "./components/IntercambioList";
+import AdminUserForm from "./components/AdminUserForm";
+import Login from "./components/Login";
 
 export default function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [role, setRole] = useState(localStorage.getItem("role"));
+  const [refresh, setRefresh] = useState(false); // trigger para refrescar
 
   const handleLogin = (newToken, userRole) => {
     setToken(newToken);
     setRole(userRole);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('role', userRole);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("role", userRole);
   };
+
+  const triggerRefresh = () => setRefresh(!refresh);
 
   if (!token) {
     return <Login onLogin={handleLogin} />;
@@ -34,12 +41,15 @@ export default function App() {
           Cerrar sesión
         </button>
       </header>
-      {role === 'admin' ? (
+
+      {role === "admin" ? (
         <AdminUserForm token={token} />
       ) : (
         <>
-        <UserProfile />
-        <FrancoCalendar token={token} />
+          <UserProfile token={token} />
+          <FrancoCalendar token={token} refresh={refresh} />
+          <FrancosPublicados token={token} refreshMisFrancos={triggerRefresh} />
+          <IntercambioList token={token} refresh={refresh} />
         </>
       )}
     </div>

@@ -7,7 +7,9 @@ export const getFrancosByEmployee = async (req, res) => {
     const userId = req.user.id;
 
     const [rows] = await db.query(
-      `SELECT * FROM francos WHERE empleado_id = ?`,
+      `SELECT * FROM francos 
+       WHERE empleado_id = ? 
+         AND estado IN ('aprobado', 'publicado')`, // solo francos válidos
       [userId]
     );
 
@@ -17,6 +19,7 @@ export const getFrancosByEmployee = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener francos' });
   }
 };
+
 
 // ✅ Empleado solicita un franco
 export const requestFranco = async (req, res) => {
